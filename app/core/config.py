@@ -8,6 +8,11 @@ class Settings(BaseSettings):
     # DB
     DATABASE_URL: str
 
+    # Security
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    ALGORITHM: str = ""
+    SECRET_KEY: str = ""
+
    
     class Config:
         env_file = ".env"
