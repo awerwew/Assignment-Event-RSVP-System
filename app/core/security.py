@@ -1,7 +1,10 @@
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from typing import Optional
-from jose import jwt, JWTError
+import jwt
+from jwt.exceptions import InvalidTokenError
+
+
 from app.core.config import settings
 
 
@@ -30,5 +33,5 @@ def decode_access_token(token: str) -> dict:
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         return payload
-    except JWTError:
+    except InvalidTokenError:
         return None
