@@ -8,6 +8,10 @@ from app.models.event import Event
 from app.models.rsvp import RSVP
 from app.api.deps import UPLOAD_DIR
 
+#this sis trial
+from app.models.user import User
+from app.api.deps import get_current_active_user
+
 
 router = APIRouter()
 
@@ -23,6 +27,7 @@ def create_event(
     location: str = Form(...),
     flyer: UploadFile | None = File(None),
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
     flyer_path = None
 
