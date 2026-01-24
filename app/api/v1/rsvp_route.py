@@ -3,6 +3,8 @@ from fastapi import APIRouter, Depends, Form, HTTPException
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.models.rsvp import RSVP
+from app.api.deps import get_current_active_user
+from app.models.user import User
 
 router = APIRouter()
 
@@ -14,6 +16,7 @@ def rsvp_event(
     name: str = Form(...),
     email: str = Form(...),
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
 ):
      # prevent duplicate RSVP
     existing = (
@@ -37,7 +40,10 @@ def rsvp_event(
     return {"message": "RSVP successful"}
 
 @router.get("/events/{event_id}/rsvps")
-def get_rsvps(event_id: int, db: Session = Depends(get_db)):
+def get_rsvps(
+    event_id: int, db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    ):
     rsvps = db.query(RSVP).filter(RSVP.event_id == event_id).all()
     if not rsvps:
         raise HTTPException(status_code=404, detail="Event with id not found")

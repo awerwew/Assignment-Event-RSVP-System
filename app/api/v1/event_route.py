@@ -8,7 +8,7 @@ from app.models.event import Event
 from app.models.rsvp import RSVP
 from app.api.deps import UPLOAD_DIR
 
-#this sis trial
+#this is trial
 from app.models.user import User
 from app.api.deps import get_current_active_user
 
@@ -53,7 +53,10 @@ def create_event(
 
 
 @router.get("/events/")
-def list_events(db: Session = Depends(get_db)):
+def list_events(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    ):
     events = db.query(Event).all()
     return events
 
