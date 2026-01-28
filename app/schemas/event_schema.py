@@ -4,7 +4,18 @@ from app.schemas.rsvp_schema import RSVP
 
 
 
-class Event(BaseModel):
+
+
+class EventCreate(BaseModel):
+    title: str
+    description: str
+    date: str
+    location: str
+    flyer_filename: Optional[str] = None
+
+
+
+class EventOut(BaseModel):
     id: int
     title: str
     description: str
@@ -14,12 +25,4 @@ class Event(BaseModel):
     rsvps: List[RSVP] = []
 
     class Config:
-        orm_mode = True
-
-
-class EventCreate(BaseModel):
-    title: str
-    description: str
-    date: str
-    location: str
-    flyer_filename: Optional[str] = None
+        orm_mode = True 

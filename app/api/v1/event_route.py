@@ -1,12 +1,13 @@
 
 
 from datetime import date
-from fastapi import APIRouter, Depends, Form, UploadFile, File
+from fastapi import APIRouter, Depends, Form, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.models.event import Event
 from app.models.rsvp import RSVP
 from app.api.deps import UPLOAD_DIR
+from app.schemas.event_schema import EventOut
 
 #this is trial
 from app.models.user import User
@@ -60,6 +61,19 @@ def list_events(
     events = db.query(Event).all()
     return events
 
+
+@router.get("/events/{event_id}")
+def get_event(
+    event_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    event = db.query(Event).filter(Event.id == event_id).first()
+
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+
+    return event
 
 
 
