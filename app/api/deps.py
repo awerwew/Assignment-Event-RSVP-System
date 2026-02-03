@@ -1,11 +1,15 @@
 import os
-from app.db.session import SessionLocal
 from fastapi.security import OAuth2PasswordBearer
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Form
 from sqlalchemy.orm import Session
+from datetime import date
+from app.schemas.event_schema import EventCreate
+from app.schemas.rsvp_schema import RSVPCreate
 
 from app.core.security import decode_access_token
 from app.models.user import User
+from app.db.session import SessionLocal
+
 
 
 
@@ -38,5 +42,33 @@ def get_current_active_user(
         raise HTTPException(status_code=400, detail= "inactive user")
     return current_user
 
+def event_form(
+    title: str = Form(...),
+    description: str = Form(...),
+    date: date = Form(...),
+    location: str = Form(...),
+) -> EventCreate:
+    return EventCreate(
+        title=title,
+        description=description,
+        date=date,
+        location=location,
+    )
+
+
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+def rsvp_form(
+    name: str = Form(...),
+    email: str = Form(...),
+       
+) -> RSVPCreate:
+    return RSVPCreate(
+        name=name,
+        email=email,
+        
+        
+    )
+

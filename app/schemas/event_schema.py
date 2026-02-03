@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional, List
+from datetime import date
 from app.schemas.rsvp_schema import RSVP
+
 
 
 
@@ -9,9 +11,9 @@ from app.schemas.rsvp_schema import RSVP
 class EventCreate(BaseModel):
     title: str
     description: str
-    date: str
+    date: date
     location: str
-    flyer_filename: Optional[str] = None
+    flyer: Optional[str] = None
 
 
 
@@ -21,7 +23,7 @@ class EventOut(BaseModel):
     description: str
     date: str
     location: str
-    flyer_filename: Optional[str] = None
+    flyer: Optional[str] = None
     rsvps: List[RSVP] = []
 
     class Config:

@@ -1,13 +1,13 @@
-
-
-from datetime import date
-from fastapi import APIRouter, Depends, Form, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
-from app.api.deps import get_db
+from typing import Optional
+import os
+import shutil
+from app.api.deps import get_db, event_form, UPLOAD_DIR
 from app.models.event import Event
-from app.models.rsvp import RSVP
-from app.api.deps import UPLOAD_DIR
-from app.schemas.event_schema import EventOut
+
+
+from app.schemas.event_schema import  EventCreate
 
 #this is trial
 from app.models.user import User
@@ -22,33 +22,33 @@ router = APIRouter()
 
 @router.post("/events/", status_code=201)
 def create_event(
-    title: str = Form(...),
-    description: str = Form(...),
-    date: date = Form(...),
-    location: str = Form(...),
-    flyer: UploadFile | None = File(None),
+    event_data: EventCreate = Depends(event_form),
+    flyer: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
 ):
     flyer_path = None
 
     if flyer:
-        flyer_path = f"{UPLOAD_DIR}/{flyer.filename}"
+        flyer_path = os.path.join(UPLOAD_DIR, flyer.filename)
         with open(flyer_path, "wb") as f:
-            f.write(flyer.file.read())
+            shutil.copyfileobj(flyer.file, f)
 
     event = Event(
-        title=title,
-        description=description,
-        date=date,
-        location=location,
+        title=event_data.title,
+        description=event_data.description,
+        date=event_data.date,
+        location=event_data.location,
         flyer=flyer_path,
+       
     )
 
     db.add(event)
     db.commit()
     db.refresh(event)
 
+    
+    
     return {"message": "Event created", "event_id": event.id}
 
 
